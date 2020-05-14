@@ -1,10 +1,28 @@
+/*
+ * @Author: cpu_code
+ * @Date: 2020-05-14 10:12:50
+ * @LastEditTime: 2020-05-14 17:34:45
+ * @FilePath: \u_boot_fslc\Makefile
+ * @Gitee: https://gitee.com/cpu_code
+ * @CSDN: https://blog.csdn.net/qq_44226094
+ */
 # SPDX-License-Identifier: GPL-2.0+
 
+# VERSION 是主版本号
+# PATCHLEVEL 是补丁版本号
+# SUBLEVEL 是次版本号
+# EXTRAVERSION 是附加版本信息
+# NAME 是和名字有关
 VERSION = 2020
 PATCHLEVEL = 01
 SUBLEVEL =
 EXTRAVERSION =
 NAME =
+
+#make 是支持递归调用
+
+# MYDEBUT = 1，开启调试信息
+MYDEBUT = 
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
@@ -15,13 +33,20 @@ NAME =
 # o Do not use make's built-in rules and variables
 #   (this increases performance and avoids hard-to-debug behaviour);
 # o Look for make include files relative to root of kernel src
+
+# " += " 给变量 MAKEFLAGS 追加了一些值
+# “-rR” 表示禁止使用内置的隐含规则和变量定义
+
+# ” $(CURDIR) ” 表示当前目录
 MAKEFLAGS += -rR --include-dir=$(CURDIR)
 
 # Determine host architecture
 include include/host_arch.h
 MK_ARCH="${shell uname -m}"
+# "unexport" 不导出变量给子 make。
 unexport HOST_ARCH
 ifeq ("x86_64", $(MK_ARCH))
+	# “export” 导出变量给子 make
   export HOST_ARCH=$(HOST_ARCH_X86_64)
 else ifneq (,$(findstring $(MK_ARCH), "i386" "i486" "i586" "i686"))
   export HOST_ARCH=$(HOST_ARCH_X86)
@@ -87,26 +112,47 @@ unexport GREP_OPTIONS
 # To put more focus on warnings, be less verbose as default
 # Use 'make V=1' to see the full commands
 
+# 使用 ifeq 来判断"$(origin V)"和"command line"是否相等
+# 当这两个相等的时候变量 KBUILD_VERBOSE = V 
 ifeq ("$(origin V)", "command line")
   KBUILD_VERBOSE = $(V)
 endif
+# 如 没有在命令行输入 V 的话，KBUILD_VERBOSE = 0
 ifndef KBUILD_VERBOSE
   KBUILD_VERBOSE = 0
 endif
 
+# 判断 KBUILD_VERBOSE 是否为 1
+# KBUILD_VERBOSE 为 1 的话变量 quiet和 Q 都为空
+
 ifeq ($(KBUILD_VERBOSE),1)
+  # 整个命令都会输出
   quiet =
+  # 完整的输出在终端上
   Q =
 else
+  # quiet_ 仅输出短版本
   quiet=quiet_
+  # @ 不会在终端输出命令
   Q = @
 endif
 
 # If the user is running make -s (silent mode), suppress echoing of
 # commands
+# 语法：$(filter <pattern...>,<text>)
+# filter 函数表示以 pattern 模式过滤 text 字符串中的单词，仅保留符合模式 pattern 的单词，可以有多个模式
+# %为通配符
+# MAKE_VERSION 是make工具的版本号
+# 可输入“make -v”查看 make工具版本号
 
+# 判断当前正在使用的编译器版本号是否为 4.x，不为空，条件成立
 ifneq ($(filter 4.%,$(MAKE_VERSION)),)	# make-4
+
+# 语法：$(firstword <text>)
+# firstword 函数用于取出 text 字符串中的第一个单词，函数的返回值就是获取到的单词
+# 不为空：条件成立
 ifneq ($(filter %s ,$(firstword x$(MAKEFLAGS))),)
+  # “silent_” 整个命令都不会输出
   quiet=silent_
 endif
 else					# make-3.8x
@@ -115,6 +161,13 @@ ifneq ($(filter s% -s%,$(MAKEFLAGS)),)
 endif
 endif
 
+# 输出$(firstword x$(MAKEFLAGS))的结果
+ifeq ($(MYDEBUT),1)
+mytest:
+	@echo 'firstword = ' $(firstword x$(MAKEFLAGS))
+endif
+
+#  export 导出变量 quiet、 Q 和 KBUILD_VERBOSE
 export quiet Q KBUILD_VERBOSE
 
 # kbuild supports saving output files in a separate directory.
@@ -138,21 +191,27 @@ ifeq ($(KBUILD_SRC),)
 
 # OK, Make called in directory where kernel src resides
 # Do we want to locate output files in a separate directory?
+
+# 判断“O”是否来自于命令行，来自命令行：条件成立
 ifeq ("$(origin O)", "command line")
+  #  “O” 来指定输出目录
+  #  KBUILD_OUTPUT：输出目录
   KBUILD_OUTPUT := $(O)
 endif
 
-# That's our default target when none is given on the command line
+# 当命令行上没有指定时，这是我们的默认目标
 PHONY := _all
 _all:
 
 # Cancel implicit rules on top Makefile
 $(CURDIR)/Makefile Makefile: ;
 
+# 判断 KBUILD_OUTPUT 是否为空，不为空：成立
 ifneq ($(KBUILD_OUTPUT),)
 # Invoke a second make in the output directory, passing relevant variables
 # check that the output directory actually exists
 saved-output := $(KBUILD_OUTPUT)
+#  mkdir 命令，创建 KBUILD_OUTPUT 目录，创建成功以后的绝对路径赋值给 KBUILD_OUTPUT
 KBUILD_OUTPUT := $(shell mkdir -p $(KBUILD_OUTPUT) && cd $(KBUILD_OUTPUT) \
 								&& /bin/pwd)
 $(if $(KBUILD_OUTPUT),, \
@@ -164,6 +223,7 @@ $(filter-out _all sub-make $(CURDIR)/Makefile, $(MAKECMDGOALS)) _all: sub-make
 	@:
 
 sub-make: FORCE
+	# $(MAKE)就是调用“make”, -C 指定子目录
 	$(Q)$(MAKE) -C $(KBUILD_OUTPUT) KBUILD_SRC=$(CURDIR) \
 	-f $(CURDIR)/Makefile $(filter-out _all sub-make,$(MAKECMDGOALS))
 
@@ -177,22 +237,24 @@ ifeq ($(skip-makefile),)
 
 # Do not print "Entering directory ...",
 # but we want to display it when entering to the output directory
+
 # so that IDEs/editors are able to understand relative filenames.
 MAKEFLAGS += --no-print-directory
 
 # Call a source code checker (by default, "sparse") as part of the
 # C compilation.
 #
-# Use 'make C=1' to enable checking of only re-compiled files.
-# Use 'make C=2' to enable checking of *all* source files, regardless
-# of whether they are re-compiled or not.
+# 使用“make C=1” 只允许检查重新编译的文件
+# 使用'make C=2'可以检查所有的源文件，无论它们是否重新编译
 #
 # See the file "doc/sparse.txt" for more details, including
 # where to get the "sparse" utility.
 
+# 判断 C 是否来源于命令行,来源于命令行，那就将 C 赋值给变量 KBUILD_CHECKSRC
 ifeq ("$(origin C)", "command line")
   KBUILD_CHECKSRC = $(C)
 endif
+# 命令行没有 C 的话 KBUILD_CHECKSRC 就为 0
 ifndef KBUILD_CHECKSRC
   KBUILD_CHECKSRC = 0
 endif
