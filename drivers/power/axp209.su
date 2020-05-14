@@ -1,0 +1,7 @@
+axp209.c:32:5:axp_set_dcdc2	16	static
+axp209.c:63:5:axp_set_dcdc3	8	static
+axp209.c:79:5:axp_set_aldo2	16	static
+axp209.c:102:5:axp_set_aldo3	24	static
+axp209.c:162:5:axp_set_aldo4	16	static
+axp209.c:190:5:axp_init	16	static
+axp209.c:232:5:do_poweroff	8	static

@@ -1,0 +1,15 @@
+ahci.c:1138:12:ahci_scsi_bus_reset	0	static
+ahci.c:679:14:ata_id_strcpy	12	static
+ahci.c:631:12:ahci_device_data_io.constprop	32	static
+ahci.c:690:12:ata_scsiop_inquiry	640	static
+ahci.c:975:12:ahci_start_ports	40	static
+ahci.c:755:12:ata_scsiop_read_write	112	static
+ahci.c:932:12:ahci_scsi_exec	24	static
+ahci.c:56:22:ahci_port_base	0	static
+ahci.c:109:12:ahci_link_up	16	static
+ahci.c:139:5:ahci_reset	16	static
+ahci.c:428:12:ahci_init_one	112	static
+ahci.c:1027:5:ahci_init_one_dm	8	static
+ahci.c:1036:5:ahci_start_ports_dm	8	static
+ahci.c:1146:5:ahci_bind_scsi	16	static
+ahci.c:1159:5:ahci_probe_scsi	24	static

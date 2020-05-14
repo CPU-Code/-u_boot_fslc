@@ -1,0 +1,13 @@
+fb_getvar.c:137:13:getvar_downloadsize	0	static
+fb_getvar.c:248:13:getvar_is_userspace	0	static
+fb_getvar.c:177:13:getvar_current_slot	0	static
+fb_getvar.c:167:13:getvar_platform	8	static
+fb_getvar.c:157:13:getvar_product	8	static
+fb_getvar.c:152:13:getvar_version_baseband	0	static
+fb_getvar.c:142:13:getvar_serialno	8	static
+fb_getvar.c:132:13:getvar_version_bootloader	0	static
+fb_getvar.c:127:13:getvar_version	0	static
+fb_getvar.c:218:13:getvar_partition_type	144	static
+fb_getvar.c:237:13:getvar_partition_size	144	static
+fb_getvar.c:184:13:getvar_has_slot	184	static
+fb_getvar.c:266:6:fastboot_getvar	96	static

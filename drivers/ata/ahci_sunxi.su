@@ -1,0 +1,2 @@
+ahci_sunxi.c:73:12:sunxi_sata_probe	16	static
+ahci_sunxi.c:99:12:sunxi_sata_bind	16	static
