@@ -1,3 +1,4 @@
+# 用于生成 u-boot.lds 链接脚本
 cmd_u-boot.lds := arm-linux-gnueabihf-gcc -E -Wp,-MD,./.u-boot.lds.d -D__KERNEL__ -D__UBOOT__   -D__ARM__ -Wa,-mimplicit-it=always  -mthumb -mthumb-interwork  -mabi=aapcs-linux  -mword-relocations  -fno-pic  -mno-unaligned-access  -ffunction-sections -fdata-sections -fno-common -ffixed-r9  -msoft-float    -pipe  -march=armv7-a -D__LINUX_ARM_ARCH__=7 -mtune=generic-armv7-a -I./arch/arm/mach-sunxi/include -Iinclude    -I./arch/arm/include -include ./include/linux/kconfig.h  -nostdinc -isystem /usr/lib/gcc-cross/arm-linux-gnueabihf/7/include -ansi -include ./include/u-boot/u-boot.lds.h -DCPUDIR=arch/arm/cpu/armv7  -D__ASSEMBLY__ -x assembler-with-cpp -std=c99 -P -o u-boot.lds arch/arm/cpu/u-boot.lds
 
 source_u-boot.lds := arch/arm/cpu/u-boot.lds
