@@ -1,3 +1,12 @@
+ #
+ # @Author: cpu_code
+ # @Date: 2020-05-14 10:16:29
+ # @LastEditTime: 2020-05-14 17:47:21
+ # @FilePath: \u_boot_fslc\cmd\Makefile
+ # @Gitee: https://gitee.com/cpu_code
+ # @CSDN: https://blog.csdn.net/qq_44226094
+ #
+
 # SPDX-License-Identifier: GPL-2.0+
 #
 # (C) Copyright 2004-2006
@@ -6,6 +15,7 @@
 ifndef CONFIG_SPL_BUILD
 # core command
 obj-y += boot.o
+# 展开就是：obj-y += bootm.o，编译 cmd/bootm.c 
 obj-$(CONFIG_CMD_BOOTM) += bootm.o
 obj-y += help.o
 obj-y += version.o
