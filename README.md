@@ -3,6 +3,33 @@
 #### 介绍
 飞思卡尔的编译后的uboot
 
+#### 文件描述
+
+uboot自带：
+
+    api:    与硬件无关的 API 函数
+    arch:   与架构体系有关的代码
+    board:  不同板子(开发板)的定制代码
+    cmd:     命令相关代码
+    common:   同用代码
+    configs： 配置文件
+    disk：   磁盘分区相关代码
+    doc：    文档
+    drivers： 驱动代码
+    dts：   设备树
+    examples： 示例代码
+    fs： 文件系统
+    include： 头文件
+    lib： 库文件
+    Licenses： 许可证相关文件
+    net： 网络相关代码
+    post：上电自检程序
+    scripts： 脚本文件
+    test： 测试代码
+    tools： 工具文件夹
+
+
+
 #### 软件架构
 软件架构说明
 

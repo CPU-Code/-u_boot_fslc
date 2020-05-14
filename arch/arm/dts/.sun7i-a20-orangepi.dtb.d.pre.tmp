@@ -1,0 +1,20 @@
+.sun7i-a20-orangepi.dtb.pre.o: \
+ arch/arm/dts/.sun7i-a20-orangepi.dtb.pre.tmp include/linux/kconfig.h \
+ include/generated/autoconf.h arch/arm/dts/sun7i-a20.dtsi \
+ arch/arm/dts/include/dt-bindings/interrupt-controller/arm-gic.h \
+ arch/arm/dts/include/dt-bindings/interrupt-controller/irq.h \
+ arch/arm/dts/include/dt-bindings/thermal/thermal.h \
+ arch/arm/dts/include/dt-bindings/dma/sun4i-a10.h \
+ arch/arm/dts/include/dt-bindings/clock/sun7i-a20-ccu.h \
+ arch/arm/dts/include/dt-bindings/clock/sun4i-a10-ccu.h \
+ arch/arm/dts/include/dt-bindings/reset/sun4i-a10-ccu.h \
+ arch/arm/dts/sunxi-common-regulators.dtsi \
+ arch/arm/dts/include/dt-bindings/gpio/gpio.h \
+ arch/arm/dts/include/dt-bindings/pinctrl/sun4i-a10.h \
+ arch/arm/dts/axp209.dtsi arch/arm/dts/sunxi-u-boot.dtsi include/config.h \
+ include/config_defaults.h include/config_uncmd_spl.h \
+ include/configs/sun7i.h include/configs/sunxi-common.h \
+ arch/arm/include/asm/arch/cpu.h arch/arm/include/asm/arch/cpu_sun4i.h \
+ include/linux/stringify.h include/config_distro_bootcmd.h \
+ arch/arm/include/asm/config.h include/linux/kconfig.h \
+ include/config_fallbacks.h

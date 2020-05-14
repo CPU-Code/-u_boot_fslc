@@ -1,0 +1,7 @@
+clock_sun4i.c:48:6:clock_init_uart	0	static
+clock_sun4i.c:64:5:clock_twi_onoff	0	static
+clock_sun4i.c:182:6:clock_set_pll3	0	static
+clock_sun4i.c:197:14:clock_get_pll3	0	static
+clock_sun4i.c:206:14:clock_get_pll5p	0	static
+clock_sun4i.c:217:14:clock_get_pll6	0	static
+clock_sun4i.c:227:6:clock_set_de_mod_clock	24	static
