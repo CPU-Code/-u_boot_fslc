@@ -1,0 +1,2 @@
+dram_sun4i.c:561:22:dramc_init_helper	40	static
+dram_sun4i.c:692:15:dramc_init	16	static
