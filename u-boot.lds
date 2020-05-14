@@ -1,3 +1,13 @@
+ #
+ # @Author: cpu_code
+ # @Date: 2020-05-14 10:12:51
+ # @LastEditTime: 2020-05-14 17:56:44
+ # @FilePath: \u_boot_fslc\u-boot.lds
+ # @Gitee: https://gitee.com/cpu_code
+ # @CSDN: https://blog.csdn.net/qq_44226094
+ #
+
+# 来源于 arch/arm/cpu/u-boot.lds 文件
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 ENTRY(_start)
