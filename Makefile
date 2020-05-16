@@ -1,11 +1,11 @@
-/*
- * @Author: cpu_code
- * @Date: 2020-05-14 10:12:50
- * @LastEditTime: 2020-05-14 17:34:45
- * @FilePath: \u_boot_fslc\Makefile
- * @Gitee: https://gitee.com/cpu_code
- * @CSDN: https://blog.csdn.net/qq_44226094
- */
+ #
+ # @Author: cpu_code
+ # @Date: 2020-05-14 10:12:50
+ # @LastEditTime: 2020-05-14 23:15:34
+ # @FilePath: \u_boot_fslc\Makefile
+ # @Gitee: https://gitee.com/cpu_code
+ # @CSDN: https://blog.csdn.net/qq_44226094
+ # 
 # SPDX-License-Identifier: GPL-2.0+
 
 # VERSION 是主版本号
@@ -21,8 +21,8 @@ NAME =
 
 #make 是支持递归调用
 
-# MYDEBUT = 1，开启调试信息
-MYDEBUT = 
+# MYDEBUG = 1，开启调试信息
+MYDEBUG = 
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
@@ -162,7 +162,7 @@ endif
 endif
 
 # 输出$(firstword x$(MAKEFLAGS))的结果
-ifeq ($(MYDEBUT),1)
+ifeq ($(MYDEBUG),1)
 mytest:
 	@echo 'firstword = ' $(firstword x$(MAKEFLAGS))
 endif
@@ -262,10 +262,13 @@ endif
 # Use make M=dir to specify directory of external module to build
 # Old syntax make ... SUBDIRS=$PWD is still supported
 # Setting the environment variable KBUILD_EXTMOD take precedence
+
+# 判断是否定义了 SUBDIRS ，如 定义了 SUBDIRS ，变量KBUILD_EXTMOD=SUBDIRS
 ifdef SUBDIRS
   KBUILD_EXTMOD ?= $(SUBDIRS)
 endif
 
+# 判断是否在命令行定义了 M ,如 定义了 KBUILD_EXTMOD = M
 ifeq ("$(origin M)", "command line")
   KBUILD_EXTMOD := $(M)
 endif
@@ -273,12 +276,16 @@ endif
 # If building an external module we do not care about the all: rule
 # but instead _all depend on modules
 PHONY += all
+
+# 判断 KBUILD_EXTMOD 时为空，如 为空：目标_all 依赖 all，因此要先编译出 all
 ifeq ($(KBUILD_EXTMOD),)
 _all: all
 else
+# 目标_all 依赖 modules，要先编译出 modules，也就是编译模块
 _all: modules
 endif
 
+# 判断 KBUILD_SRC 是否为空，如 为空：设置变量 srctree 为当前目录，即srctree 为“.”，
 ifeq ($(KBUILD_SRC),)
         # building in the source tree
         srctree := .
@@ -290,12 +297,17 @@ else
                 srctree := $(KBUILD_SRC)
         endif
 endif
+# 设置变量 objtree 为当前目录
 objtree		:= .
+
+# 设置变量 src 和 obj，都为当前目录
 src		:= $(srctree)
 obj		:= $(objtree)
 
+# 设置 VPATH
 VPATH		:= $(srctree)$(if $(KBUILD_EXTMOD),:$(KBUILD_EXTMOD))
 
+# 导出变量 scrtree、 objtree 和 VPATH
 export srctree objtree VPATH
 
 # Make sure CDPATH settings don't interfere
@@ -303,6 +315,12 @@ unexport CDPATH
 
 #########################################################################
 
+# 获取主机架构和系统
+# 定义了一个变量 HOSTARCH，用于保存主机架构
+# 调用 shell 命令“ uname -m ”获取架构名称
+# “ | ”表示管道，意思是将左边的输出作为右边的输入
+# sed -e 是替换命令
+# “sed -e s/i.86/x86/”表示将管道输入的字符串中的“i.86”替换为“x86”，
 HOSTARCH := $(shell uname -m | \
 	sed -e s/i.86/x86/ \
 	    -e s/sun4u/sparc64/ \
@@ -313,18 +331,36 @@ HOSTARCH := $(shell uname -m | \
 	    -e s/macppc/powerpc/\
 	    -e s/sh.*/sh/)
 
+# 定义了变量 HOSTOS，此变量用于保存主机 OS 的值
+# 使用 shell 命令“ name -s ”来获取主机 OS
+# 使用管道将“ Linux ”作为后面“tr '[:upper:]' '[:lower:]'”的输入
+# “tr '[:upper:]' '[:lower:]'”表示将所有的大写字母替换为小写字母，因此得到“linux”
+# 使用管道，将“linux”作为“sed -e 's/\(cygwin\).*/cygwin/'”的输入，用于将cygwin.*替换为 cygwin
 HOSTOS := $(shell uname -s | tr '[:upper:]' '[:lower:]' | \
 	    sed -e 's/\(cygwin\).*/cygwin/')
 
+# 导出 HOSTARCH=x86_64， HOSTOS=linux
 export	HOSTARCH HOSTOS
 
 #########################################################################
 
 # set default to nothing for native builds
+# “ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-”就是用于设置 ARCH 和 CROSS_COMPILE
+# 判断 HOSTARCH 和 ARCH 这两个变量是否相等
 ifeq ($(HOSTARCH),$(ARCH))
 CROSS_COMPILE ?=
 endif
 
+# 快捷定义，可直接使用make
+# ARCH ?= arm 
+# CROSS_COMPILE ?= arm-linux-gnueabihf-
+
+# 定义变量 KCONFIG_CONFIG， uboot 是可以配置的，这里设置配置文件为.config，
+# .config 默认是没有的，需要使用命令“make xxx_defconfig”对 uboot 进行配置，
+# 配置完成以后就会在 uboot 根目录下生成.config
+# 默认情况下.config 和xxx_defconfig 内容是一样的，因为.config 就是从 xxx_defconfig 复制过来的
+# 如 后续自行调整了 uboot 的一些配置参数，那么这些新的配置参数就添加到了.config 中，而不是 xxx_defconfig
+# 相当于 xxx_defconfig 只是一些初始配置，而.config 里面的才是实时有效的配置
 KCONFIG_CONFIG	?= .config
 export KCONFIG_CONFIG
 
@@ -439,11 +475,15 @@ export KBUILD_MODULES KBUILD_BUILTIN
 export KBUILD_CHECKSRC KBUILD_SRC KBUILD_EXTMOD
 
 # We need some generic definitions (do not try to remake the file).
+# 调用文件 scripts/Kbuild.include 这个文件
 scripts/Kbuild.include: ;
+# 使用“ include ”包含了文件 scripts/Kbuild.include
+#  uboot 的编译过程中会用到 scripts/Kbuild.include 中的这些变量
 include scripts/Kbuild.include
 
 # Make variables (CC, etc...)
 
+# 设置了 CROSS_COMPILE 的名字
 AS		= $(CROSS_COMPILE)as
 # Always use GNU ld
 ifneq ($(shell $(CROSS_COMPILE)ld.bfd -v 2> /dev/null),)
@@ -488,6 +528,7 @@ KBUILD_AFLAGS	+= $(call cc-option,-fno-PIE)
 UBOOTRELEASE = $(shell cat include/config/uboot.release 2> /dev/null)
 UBOOTVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
 
+# 导出很多变量
 export VERSION PATCHLEVEL SUBLEVEL UBOOTRELEASE UBOOTVERSION
 export ARCH CPU BOARD VENDOR SOC CPUDIR BOARDDIR
 export CONFIG_SHELL HOSTCC HOSTCFLAGS HOSTLDFLAGS CROSS_COMPILE AS LD CC
@@ -498,6 +539,17 @@ export HOSTCXX HOSTCXXFLAGS CHECK CHECKFLAGS DTC DTC_FLAGS
 export KBUILD_CPPFLAGS NOSTDINC_FLAGS UBOOTINCLUDE OBJCOPYFLAGS LDFLAGS
 export KBUILD_CFLAGS KBUILD_AFLAGS
 
+# 这 7 个变量就是在 config.mk，最终在 .config
+ifeq ($(MYDEBUG),1)
+mytst:
+	@echo 'ARCH=' $(ARCH)
+	@echo 'CPU=' $(CPU)
+	@echo 'BOARD =' $(BOARD)
+	@echo 'VENDOR=' $(VENDOR)
+	@echo 'SOC=' $(SOC)
+	@echo 'CPUDIR=' $(CPUDIR)
+	@echo 'BOARDDIR=' $(BOARDDIR)
+endif
 # When compiling out-of-tree modules, put MODVERDIR in the module
 # tree rather than in the kernel tree. The kernel tree might
 # even be read-only.
@@ -515,6 +567,8 @@ export RCS_TAR_IGNORE := --exclude SCCS --exclude BitKeeper --exclude .svn \
 # Rules shared between *config targets and build targets
 
 # Basic helpers built in scripts/
+#  scripts_basic 的规则，其对应的命令用到了变量 Q、 MAKE 和 build
+# 变量 build 是在 scripts/Kbuild.include 文件中有定义
 PHONY += scripts_basic
 scripts_basic:
 	$(Q)$(MAKE) $(build)=scripts/basic
@@ -528,6 +582,7 @@ PHONY += outputmakefile
 # separate output directory. This allows convenient use of make in the
 # output directory.
 outputmakefile:
+# 判断 KBUILD_SRC 是否为空，只有变量 KBUILD_SRC 不为空的时候outputmakefile 才有意义
 ifneq ($(KBUILD_SRC),)
 	$(Q)ln -fsn $(srctree) source
 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/mkmakefile \
@@ -542,7 +597,10 @@ endif
 # Detect when mixed targets is specified, and make a second invocation
 # of make so .config is not included in this case either (for *config).
 
+# 定义了变量 version_h，这变量保存版本号文件，此文件是自动生成
 version_h := include/generated/version_autogenerated.h
+
+# 定义了变量 timestamp_h，此变量保存时间戳文件，此文件也是自动生成
 timestamp_h := include/generated/timestamp_autogenerated.h
 defaultenv_h := include/generated/defaultenv_autogenerated.h
 
@@ -554,21 +612,28 @@ config-targets := 0
 mixed-targets  := 0
 dot-config     := 1
 
+# 将 MAKECMDGOALS 中不符合 no-dot-config-targets 的部分过滤掉，剩下的如果不为空的话条件就成立
+# MAKECMDGOALS 是 make 的一个环境变量，这个变量会保存你所指定的终极目标列表
 ifneq ($(filter $(no-dot-config-targets), $(MAKECMDGOALS)),)
 	ifeq ($(filter-out $(no-dot-config-targets), $(MAKECMDGOALS)),)
 		dot-config := 0
 	endif
 endif
 
+# 判断KBUILD_EXTMOD是否为空，如 KBUILD_EXTMOD为空的话条件成立
 ifeq ($(KBUILD_EXTMOD),)
+		# 将 MAKECMDGOALS 中不符合“config”和“%config”的部分过滤掉，如果剩下的部分不为空条件就成立
         ifneq ($(filter config %config,$(MAKECMDGOALS)),)
                 config-targets := 1
+				# 统计 MAKECMDGOALS 中的单词个数，如果不为 1 的话条件成立
+				#  words 函数来统计单词个数
                 ifneq ($(words $(MAKECMDGOALS)),1)
                         mixed-targets := 1
                 endif
         endif
 endif
 
+# 如果变量 mixed-targets 为 1 的话条件成立
 ifeq ($(mixed-targets),1)
 # ===========================================================================
 # We're called with mixed targets (*config and build targets).
@@ -586,6 +651,8 @@ __build_one_by_one:
 	done
 
 else
+
+# 如果变量 config-targets 为 1 的话条件成立
 ifeq ($(config-targets),1)
 # ===========================================================================
 # *config targets only - make sure prerequisites are updated, and descend
@@ -594,10 +661,14 @@ ifeq ($(config-targets),1)
 KBUILD_DEFCONFIG := sandbox_defconfig
 export KBUILD_DEFCONFIG KBUILD_KCONFIG
 
+# 没有目标与之匹配，所以不执行
 config: scripts_basic outputmakefile FORCE
 	$(Q)$(MAKE) $(build)=scripts/kconfig $@
 
+# 有目标与之匹配，当输入“make xxx_defconfig”的时候就会匹配到%config 目标，
+# 目标“%config”依赖于 scripts_basic、 outputmakefile 和 FORCE
 %config: scripts_basic outputmakefile FORCE
+	# 命令展开就是：@make -f ./scripts/Makefile.build obj=scripts/kconfig xxx_defconfig
 	$(Q)$(MAKE) $(build)=scripts/kconfig $@
 
 else
@@ -2225,6 +2296,8 @@ endif
 
 endif	# skip-makefile
 
+#  FORCE 是没有规则和依赖的，所以每次都会重新生成 FORCE。
+# 当 FORCE 作为其他目标的依赖时，由于 FORCE 总是被更新过的，因此依赖所在的规则总是会执行
 PHONY += FORCE
 FORCE:
 
