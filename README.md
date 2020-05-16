@@ -84,7 +84,6 @@ uboot自带：
     .config：       如何配置文件
     cmd/Makefile:   
 
-
 ## 安装教程
 
 1.  xxxx
